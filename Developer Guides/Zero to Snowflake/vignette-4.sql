@@ -249,6 +249,8 @@ SELECT
     apply_method
 FROM TABLE(INFORMATION_SCHEMA.TAG_REFERENCES_ALL_COLUMNS('raw_customer.customer_loyalty', 'table'));
 
+select * from tb_101.raw_customer.customer_loyalty;
+
 /*  3. Column-level Security with Masking Policies
     **************************************************************
     User-Guide:
