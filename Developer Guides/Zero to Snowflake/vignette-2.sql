@@ -121,6 +121,7 @@ SELECT
 FROM
     raw_pos.menu_staging m,
     LATERAL FLATTEN(INPUT => m.menu_item_health_metrics_obj:menu_item_health_metrics[0]:ingredients::ARRAY) i;
+                               
 
 /*  3. Dynamic Tables
     **************************************************************
