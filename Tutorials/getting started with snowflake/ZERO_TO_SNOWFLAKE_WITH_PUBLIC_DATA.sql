@@ -165,6 +165,92 @@ SELECT
 FROM data_prep
 ORDER BY product, period_end_date;
 
+DROP TABLE sec_filings_index;
+
+-- Run a query on the table:
+SELECT * FROM sec_filings_index LIMIT 10;
+
+
+UNDROP TABLE sec_filings_index;
+
+SELECT * FROM sec_filings_index LIMIT 10;
+
+USE ROLE sysadmin;
+
+USE WAREHOUSE compute_wh;
+
+USE DATABASE Public_Data;
+
+USE SCHEMA public;
+
+UPDATE company_metadata SET company_name = 'oops';
+
+SELECT *
+FROM company_metadata;
+
+-- Set the session variable for the query_id
+SET query_id = (
+  SELECT query_id
+  FROM TABLE(information_schema.query_history_by_session(result_limit=>5))
+  WHERE query_text LIKE 'UPDATE%'
+  ORDER BY start_time DESC
+  LIMIT 1
+);
+select $query_id;
+-- Use the session variable with the identifier syntax (e.g., $query_id)
+CREATE OR REPLACE TABLE company_metadata AS
+SELECT *
+FROM company_metadata
+BEFORE (STATEMENT => $query_id);
+
+-- Verify the company names have been restored
+SELECT *
+FROM company_metadata;
+
+
+USE ROLE accountadmin;
+
+CREATE ROLE junior_dba;
+
+GRANT ROLE junior_dba TO USER admin;
+
+USE ROLE junior_dba;
+
+USE ROLE accountadmin;
+
+GRANT USAGE ON WAREHOUSE compute_wh TO ROLE junior_dba;
+
+USE ROLE junior_dba;
+
+USE WAREHOUSE compute_wh;
+
+USE ROLE accountadmin;
+
+GRANT USAGE ON DATABASE Public_Data TO ROLE junior_dba;
+
+GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE_PUBLIC_DATA_FREE TO ROLE junior_dba;
+
+USE ROLE junior_dba;
+
+
+-- Snowflake 환경 재설정
+
+USE ROLE accountadmin;
+
+DROP DATABASE IF EXISTS Public_Data;
+
+DROP WAREHOUSE IF EXISTS analytics_wh;
+
+DROP ROLE IF EXISTS junior_dba;
+
+
+
+
+
+
+
+
+
 
 
 
